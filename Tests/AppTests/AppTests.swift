@@ -1,16 +1,16 @@
 @testable import App
-import XCTVapor
-import Testing
 import Fluent
+import Testing
+import XCTVapor
 
 @Suite("App Tests with DB", .serialized)
 struct AppTests {
     private func withApp(_ test: (Application) async throws -> ()) async throws {
         let app = try await Application.make(.testing)
         try await configure(app)
-        try await app.autoMigrate()   
+        try await app.autoMigrate()
         try await test(app)
-        try await app.autoRevert()   
+        try await app.autoRevert()
         try await app.asyncShutdown()
     }
     
@@ -32,7 +32,7 @@ struct AppTests {
             
             try await app.test(.GET, "todos", afterResponse: { res async throws in
                 #expect(res.status == .ok)
-                #expect(try res.content.decode([TodoDTO].self) == sampleTodos.map { $0.toDTO()} )
+                #expect(try res.content.decode([TodoDTO].self) == sampleTodos.map { $0.toDTO() })
             })
         }
     }
@@ -47,7 +47,7 @@ struct AppTests {
             }, afterResponse: { res async throws in
                 #expect(res.status == .ok)
                 let models = try await Todo.query(on: app.db).all()
-                #expect(models.map({ $0.toDTO().title }) == [newDTO.title])
+                #expect(models.map { $0.toDTO().title } == [newDTO.title])
                 XCTAssertEqual(models.map { $0.toDTO() }, [newDTO])
             })
         }
